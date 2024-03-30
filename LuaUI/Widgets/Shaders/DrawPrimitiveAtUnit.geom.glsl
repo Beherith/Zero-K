@@ -48,9 +48,13 @@ void offsetVertex4(float x, float y, float z, float u, float v, float addRadiusC
 	vec3 primitiveCoords = vec3(x,y,z);
 	vec3 vecnorm = normalize(primitiveCoords);
 	PRE_OFFSET
-	gl_Position = cameraViewProj * vec4(centerpos.xyz + rotY * (addRadius * addRadiusCorr * vecnorm + primitiveCoords ), 1.0);
+	vec3 actualWorldPosition = centerpos.xyz + rotY * (addRadius * addRadiusCorr * vecnorm + primitiveCoords );
+	gl_Position = cameraViewProj * vec4(actualWorldPosition, 1.0);
 	g_uv.zw = dataIn[0].v_parameters.zw;
-	POST_GEOMETRY
+	#if UNDERWATERFRAGMENTS == 1
+		g_uv.z = actualWorldPosition.y;
+	#endif
+	POST_GEOMETRY 
 	EmitVertex();
 }
 #line 22000
